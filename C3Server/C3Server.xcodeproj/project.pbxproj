@@ -1,0 +1,215 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9412C8CA13323FF9002FA8FE /* mongoose.c in Sources */ = {isa = PBXBuildFile; fileRef = 9412C8C813323FF9002FA8FE /* mongoose.c */; };
+		9412C8CE13324015002FA8FE /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 9412C8CD13324015002FA8FE /* Makefile */; };
+		9445107613323F5300C4A7BD /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9445107513323F5300C4A7BD /* main.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		9445106F13323F5300C4A7BD /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		9412C8C813323FF9002FA8FE /* mongoose.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mongoose.c; sourceTree = "<group>"; };
+		9412C8C913323FF9002FA8FE /* mongoose.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mongoose.h; sourceTree = "<group>"; };
+		9412C8CD13324015002FA8FE /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		9412C918133251C7002FA8FE /* favicon.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = favicon.ico; sourceTree = "<group>"; };
+		9445107113323F5300C4A7BD /* C3Server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = C3Server; sourceTree = BUILT_PRODUCTS_DIR; };
+		9445107513323F5300C4A7BD /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		9445107713323F5300C4A7BD /* C3Server.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = C3Server.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9445106E13323F5300C4A7BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9445106613323F5300C4A7BD = {
+			isa = PBXGroup;
+			children = (
+				9445107413323F5300C4A7BD /* C3Server */,
+				9445107213323F5300C4A7BD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9445107213323F5300C4A7BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9445107113323F5300C4A7BD /* C3Server */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9445107413323F5300C4A7BD /* C3Server */ = {
+			isa = PBXGroup;
+			children = (
+				9412C918133251C7002FA8FE /* favicon.ico */,
+				9412C8CD13324015002FA8FE /* Makefile */,
+				9412C8C813323FF9002FA8FE /* mongoose.c */,
+				9412C8C913323FF9002FA8FE /* mongoose.h */,
+				9445107513323F5300C4A7BD /* main.c */,
+				9445107713323F5300C4A7BD /* C3Server.1 */,
+			);
+			path = C3Server;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9445107013323F5300C4A7BD /* C3Server */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9445107A13323F5300C4A7BD /* Build configuration list for PBXNativeTarget "C3Server" */;
+			buildPhases = (
+				9445106D13323F5300C4A7BD /* Sources */,
+				9445106E13323F5300C4A7BD /* Frameworks */,
+				9445106F13323F5300C4A7BD /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = C3Server;
+			productName = C3Server;
+			productReference = 9445107113323F5300C4A7BD /* C3Server */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9445106813323F5300C4A7BD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = "Fjukstad Weatherprograms";
+			};
+			buildConfigurationList = 9445106B13323F5300C4A7BD /* Build configuration list for PBXProject "C3Server" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 9445106613323F5300C4A7BD;
+			productRefGroup = 9445107213323F5300C4A7BD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9445107013323F5300C4A7BD /* C3Server */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9445106D13323F5300C4A7BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9445107613323F5300C4A7BD /* main.c in Sources */,
+				9412C8CA13323FF9002FA8FE /* mongoose.c in Sources */,
+				9412C8CE13324015002FA8FE /* Makefile in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		9445107813323F5300C4A7BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9445107913323F5300C4A7BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		9445107B13323F5300C4A7BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		9445107C13323F5300C4A7BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9445106B13323F5300C4A7BD /* Build configuration list for PBXProject "C3Server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9445107813323F5300C4A7BD /* Debug */,
+				9445107913323F5300C4A7BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9445107A13323F5300C4A7BD /* Build configuration list for PBXNativeTarget "C3Server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9445107B13323F5300C4A7BD /* Debug */,
+				9445107C13323F5300C4A7BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9445106813323F5300C4A7BD /* Project object */;
+}
