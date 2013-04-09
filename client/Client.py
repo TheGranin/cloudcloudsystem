@@ -3,10 +3,13 @@ Created on Apr 8, 2013
 
 @author: Simon
 '''
-import httplib, pygame, StringIO, thread, argparse, time, random
+import httplib, pygame, StringIO, thread, argparse, time, random, datetime
 from pygame.locals import *
+from miniboids import *
 
-
+class TYPES():
+    REQ_TYPE_DATE = 0
+    REQ_TYPE_SEQ = 1
 
 class Client():
     def __init__(self):
@@ -15,7 +18,6 @@ class Client():
         
         self._setup_menu()
         
-          
         self.screen = None
         
         self.running = True
@@ -23,10 +25,10 @@ class Client():
         self.image = None
         self.font = None
         
+        self.fifteenMinutes = datetime.timedelta(minutes=15)
+        
         self.mode = " "
         self.cloude = 0.0
-        
-        #self.getCloudValue("")
     
     def start(self, auto = False):
         thread.start_new_thread(self.display, ())
@@ -46,9 +48,54 @@ class Client():
                 self.mode = "AUTO TEST: Sleep: "+str(sleep-x)+" sec"
                 time.sleep(1)
             
-            self.getCloudValue("0")
+            requestType = self.getRandReqType()
+            if requestType == TYPES.REQ_TYPE_DATE:
+                self.autoGet()
+            elif requestType == TYPES.REQ_TYPE_SEQ:
+                self.autoScrool()
+    
+    def getRandReqType(self):
+        range = random.randrange(0, 101)
+        if range > 50:
+            return TYPES.REQ_TYPE_SEQ
+        else:
+            return TYPES.REQ_TYPE_DATE
             
-            
+    def randDate(self):
+        year = 2003
+        month = 3#random.randrange(1, 12)
+        day = 22#random.randrange(1, 28)
+        hour = random.randrange(1, 23)
+        minute = random.randrange(0, 59)
+        minute -= minute % 15
+        return "%d/%02d/%02d/%02d%02d" % (year, month, day, hour, minute)
+        
+    def autoGet(self):
+        numGets = random.randrange(1, 20)
+        for x in range(1, numGets+1):
+            self.mode = str("RANDOM GET: %d of total %d images" % (x, numGets))
+            self.getCloudValue(self.randDate())
+              
+    def autoScrool(self):
+        year = 2003
+        month = 3#random.randrange(1, 12)
+        day = 22#random.randrange(1, 28)
+        hour = random.randrange(1, 23)
+        minute = random.randrange(0, 59)
+        minute -= minute % 15 
+        start = "%d/%02d/%02d/%02d%02d" % (year, month, day, hour, minute)
+        
+        scroll_intervall = random.randrange(1, 4)
+        
+        if scroll_intervall == 4:
+            day = random.randrange(day, 28)
+        
+        hour = random.randrange(hour, 23)
+        minute = random.randrange(minute, 59)
+        minute -= minute % 15 
+        end = "%d/%02d/%02d/%02d%02d" % (year, month, day, hour, minute)
+        
+        self.smoothScrool(start, end, scroll_intervall)        
                 
     def run(self):
         print "manual mode"
@@ -69,6 +116,11 @@ class Client():
         self.screen = pygame.display.set_mode((704, 576))
         self.fontType = pygame.font.SysFont("None", 40)
         
+        boids = []
+        for x in range(random.randrange(10, 30)):        
+            boids.append(Boid(self.screen))
+        
+        
         while (self.running):
             for event in pygame.event.get():
                     if event.type == QUIT:
@@ -80,16 +132,28 @@ class Client():
                             return
                         
             pygame.draw.rect(self.screen, (3,3,3), (0, 0, self.screen.get_width(), self.screen.get_height()))
-            clock.tick(20)
+            time_passed = clock.tick(100)
+            time_passed_seconds = time_passed / 1000.0
             
             if self.image != None:
                 self.screen.blit(self.image, (0, 0))
             
+            for boid in boids:
+                boid.update_vectors(boids,[], [])
+                boid.move(time_passed_seconds, self.screen)
+                    
+                boid.draw(self.screen)
+            
+            
+            
             if self.font != None:
                 self.screen.blit(self.fontType.render(str(self.font), 0, (255,0,0)), (40,500))
+                
+            if self.cloude != None:
+                self.screen.blit(self.fontType.render("Value: "+ str(self.cloude), 0, (255,0,0)), (40,80))
             
             self.screen.blit(self.fontType.render(str(self.mode), 0, (255,0,0)), (40,40))
-            self.screen.blit(self.fontType.render("Value: "+ str(self.cloude), 0, (255,0,0)), (40,80))
+            
             
             pygame.display.flip()
                 
@@ -112,38 +176,71 @@ class Client():
         elif method in ["help", "h", "-h"]:
             print self.help
     
-    def smoothScrool(self, timeStart, timeEnd):
-        pass
+    def smoothScrool(self, timeStart, timeEnd, interval = 1):
+        startDate = datetime.datetime.strptime(timeStart, "%Y/%m/%d/%H%M")
+        endDate = datetime.datetime.strptime(timeEnd, "%Y/%m/%d/%H%M")
+        
+        while (startDate < endDate):
+            self.mode = "SMOOTH SCROLL INT: " + str(interval * 15)+"min"
+            startDate = startDate + (interval*self.fifteenMinutes)
+            print startDate
+            self.getCloudValue(startDate.strftime("%Y/%m/%d/%H%M"))
+                                     
+        
             
     def getCloudValue(self, time):
-        #try:
-            time = "/2003/03/22/0115"#time
+        try:
+            #time = "/2003/03/22/0115"#time
             
-            self.mode = "Gets date:" + time
+            date = datetime.datetime.strptime(time, "%Y/%m/%d/%H%M")
             
-            msg = self.Get(time)
+            #date = date + (random.randrange(0, 100)*self.fifteenMinutes)
+            
+            #self.mode = "Gets date:" + time
+            
+            print date.strftime("/%Y/%m/%d/%H%M")
+            msg = self.Get(date.strftime("/%Y/%m/%d/%H%M"))
         
             print msg.status, msg.reason
-            print msg.status
-            #if msg.status[0] == 200:
-            #    self.mode = "Got picture"
             
-            jpeg_data = msg.read()
-        
-            buff = StringIO.StringIO()
-            buff.write(jpeg_data)
-            buff.seek(0)
+            if msg.status == 200:
+                #self.mode = "Got picture"
+                
+                jpeg_data = msg.read()
+                
+                buff = StringIO.StringIO()
+                buff.write(jpeg_data)
+                buff.seek(0)
+                
+                self.image = pygame.image.load(buff)
+                self.font = time
             
-            self.image = pygame.image.load(buff)
-            self.font = time
+            elif msg.status == 303:
+                self.font = "GOT REDIRECT"
+            
+            elif msg.status == 400:
+                self.font = "SERVER ERROR BAD REQUEST"
+                
+            elif msg.status == 404:
+                #self.mode = "SERVER ERROR DATE NOT FOUND"
+                self.image = None
+                self.font = "DATE NOT FOUND"
+                
+            else:
+                self.font = "SERVER ERROR"
+                 
             
             
             
             #with open('out.jpg', 'wb') as out_file:
             #    out_file.write(jpeg_data)
    
-        #except:
-        #    print "Client Error"
+        except:
+            print "Client Error"
+            self.mode = "CLIENT ERROR"
+            self.font = "CLIENT COLD NOT CONNECT"
+            self.cloude = None
+            self.image = None
         
     def _setup_menu(self):
         self.help = """Cloud commands:
