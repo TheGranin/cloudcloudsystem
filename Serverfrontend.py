@@ -1,108 +1,107 @@
-import urllib2
 import argparse
-import random
-import Image
-import cStringIO
-import json
-from config import *
-from datetime import *
-from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+import BaseHTTPServer
+import SocketServer
 
-#This class will handles any incoming request from
-#the browser 
-class myHandler(BaseHTTPRequestHandler):
+from cache import *
 
-	#Handler for the GET requests
+
+cache = Cache(imageCacheSize, ccCacheSize)
+
+
+class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+	"""
+	Class for server communication, will handle any incomming request
+	"""
+
+
 	def do_GET(self):
+		"""
+		Handler for the GET requests
+		"""
+	
 		work = self.reqWorkResp()
-		
 		if work == "YES":
 			
-			#Caluclate the cloudiness for that time
-			print self.path
-			date = datetime.strptime(self.path, "/%Y/%m/%d/%H%M")
-			image, cloudValue = self.getBestImage(date)
+			try:
+				date = datetime.datetime.strptime(self.path, "/%Y/%m/%d/%H%M")
+				date = roundTime(date,roundTo=15*60)
+			except Exception as e:
+				print e
+				self.send_response(400)
+				self.end_headers()
+				return
+			
+			tupleData = self.getBestImage(date)
 
+			if tupleData == -1:
+				self.send_response(404)
+				self.end_headers()
+				return
+				
+			image, cloudValue = tupleData
 			print "CC =", cloudValue
-	
 	
 			self.send_response(200)
 			self.send_header('Content-type','jpg')
 			self.send_header('x-CC',cloudValue)
 			self.end_headers()
 
-			
 			self.wfile.write(image)
 			print "Request complete"
 			
 		else:
+			#Redirect the client
 			self.send_response(303)
-			
 			#UPDATE IN FUTURE
 			#self.send_header('Location','http://0.0.0.0:'+ ServersPorts[random.randint(0,2)])
-			self.send_header('Location','http://0.0.0.0:8080')
+			self.send_header('Location','http://vg.no')
 			self.end_headers()
 
 		
 	def reqWorkResp(self):
+		"""
+		Request an answer from the C3 server
+		"""
 		response = urllib2.urlopen(C3Server)
 		return response.read()
-	
-	
-	def calculateCloudiness(self, image):
-		try:
-			
-			buff = cStringIO.StringIO()
-			buff.write(image)
-			buff.seek(0)
-			img = Image.open(buff)
 
-			pix = img.load()
-			
-			Nbw = 0;
-			N = 0; 
-			Nbright = 0; 
-			CC = 0.0
-			
-			for i in xrange(0,626):
-				for j in xrange(0,266):
-					r,g,b = pix[i, j]
-					if( ( r + b + g ) > 160 ): 
-						Nbright += 1
-					if ( b > ( (r + g) / 1.9 ) ):
-						Nbw += 1
-					else:
-						N+=1
-			if ( Nbright > ( 626*266 )*0.4 ):
-				CC = 100.0 - Nbw*100.0/(626*266)
-			else:
-				CC = 0.0 
-			return CC 
-		except IOError:
-			print "cannot convert", infile
+
+		
+	def getImageAndCloudniess(self,date):
+		"""
+		Function that gets the image and returns a tuple of the image and cloudiness if the image exists, if not -1
+		"""
+		image = cache.getImage(date)
+		if image == -1:
 			return -1
 		
-	def getImage(self, date):
-		response = urllib2.urlopen(C2Server+ date.strftime("%Y/%m/%d/wcam0_%Y%m%d_%H%M.jpg") )
-		return response.read()
+		CC = cache.calculateCloudiness(image)
+		return (image,CC)
 
 	def getBestImage(self, date):
+		"""
+		Finds the image that best represent the cloudiness over a hour and the meidan over that cloudiness 
+		"""
 		pictures = []
-
-		fifteenMinutes = timedelta(minutes=15)
+		fifteenMinutes = datetime.timedelta(minutes=15)
 		median = 0.0
 		
-		for x in xrange(-2,3):
+		tupleData = self.getImageAndCloudniess(date) 
+		if tupleData == -1:
+			return -1
+		
+		pictures.append(tupleData)
+		
+		for x in [-2,2,-1,1]:
 			tmpdate = date + (x * fifteenMinutes)
-			image = self.getImage(tmpdate)
-			
-			
-			CC = self.calculateCloudiness(image)
-			pictures.append((image, CC))
-			median += CC
+			tupleData = self.getImageAndCloudniess(tmpdate) 
+			if tupleData == -1:
+				continue
 
-			
-		median = median/5
+			pictures.append(tupleData)
+			median += tupleData[1]
+
+		median = median/len(pictures)
 		bestPicture = ""
 		bestValue = 100.0
 		for image in pictures:
@@ -113,26 +112,30 @@ class myHandler(BaseHTTPRequestHandler):
 		return (bestPicture, median)
 		
 
-	#
+	#The request handler issues a inverse name lookup in order to display 
+	#the client name in the log, this always fails and has a huge delay overrides it
 	def address_string(self):
 		host, port = self.client_address[:2]
 		#return socket.getfqdn(host)
 		return host
 		
-		
+
+#Class to make the basehttpserver able to server threads
+class ThreadedHTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
+	pass
+
 		
 if __name__ == '__main__':
 	try:
 		#Setting up the correct arguments
 		parser = argparse.ArgumentParser()
 		parser.add_argument("-p", "--port", type = int ,help = "which port should the server run on", default = "8080")
+		parser.add_argument("-s", type = int ,help = "Which server number are you", default = "1")
 		args = parser.parse_args()
-		
-		
-		server = HTTPServer(('', args.port), myHandler)
+
+		server = ThreadedHTTPServer(('', args.port), myHandler)
 		print 'Started httpserver on port' , args.port
-
-
+		
 		#Wait forever for incoming http requests
 		server.serve_forever()
 
