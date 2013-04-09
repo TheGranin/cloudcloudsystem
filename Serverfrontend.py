@@ -131,7 +131,7 @@ class myHandler(BaseHTTPRequestHandler):
 		
 try:
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-p", "--port", type = int ,help = "which port should the server run on", default = "8080")
+	parser.add_argument("-p", "--port", type = int , help = "which port should the server run on", default = "8080")
 
 	
 	args = parser.parse_args()

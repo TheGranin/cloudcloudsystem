@@ -3,7 +3,7 @@ Created on Apr 8, 2013
 
 @author: Simon
 '''
-import httplib, pygame, StringIO, thread
+import httplib, pygame, StringIO, thread, argparse, time, random
 from pygame.locals import *
 
 
@@ -26,15 +26,33 @@ class Client():
         self.mode = " "
         self.cloude = 0.0
         
-        
         #self.getCloudValue("")
     
-    def start(self):
+    def start(self, auto = False):
         thread.start_new_thread(self.display, ())
         #self.display()
-        self.run()
+        if auto:
+            self.autoTest()
+        else:
+            self.run()
+            
+    def autoTest(self):
+        print "AutoTest"
         
+        while(self.running):
+            self.mode = "AUTO TEST"
+            sleep = random.randrange(0, 5)
+            for x in range(0, sleep+1):
+                self.mode = "AUTO TEST: Sleep: "+str(sleep-x)+" sec"
+                time.sleep(1)
+            
+            self.getCloudValue("0")
+            
+            
+                
     def run(self):
+        print "manual mode"
+        
         while(self.running):
             self.mode = "Manual: Waits for command"
             cmd = raw_input('CMD: ')
@@ -70,7 +88,7 @@ class Client():
             if self.font != None:
                 self.screen.blit(self.fontType.render(str(self.font), 0, (255,0,0)), (40,500))
             
-            self.screen.blit(self.fontType.render(str("MODE: "+self.mode), 0, (255,0,0)), (40,40))
+            self.screen.blit(self.fontType.render(str(self.mode), 0, (255,0,0)), (40,40))
             self.screen.blit(self.fontType.render("Value: "+ str(self.cloude), 0, (255,0,0)), (40,80))
             
             pygame.display.flip()
@@ -138,8 +156,13 @@ class Client():
         
             
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-a", "--auto", help = "run client in Auto mode", action = 'store_true')
+
+    args = parser.parse_args()
+    
     client = Client()
-    client.start()
+    client.start(args.auto)
     print "Exit program"
     
     
