@@ -13,10 +13,10 @@ urls = ('/', 'index')
 class index():
     def GET(self):
         randNum = random.randrange(0, 100);
-        if (randNum < 70):
-            return "GO FOR IT"
+        if (randNum < 100):
+            return "YES"
         else:
-            return "DON't DO IT"
+            return "NO"
 
 if __name__ == '__main__':
     app = web.application(urls, globals())

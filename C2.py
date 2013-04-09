@@ -5,7 +5,7 @@ urls = (
 )
 
 #Type of url
-#http://vvnas00:9909/2003/03/22/wcam0_20030322_0000.jpg
+#http://vvnas00:9909/2003/03/22/wcam0_20030322_0115.jpg
 
 class index:
     def GET(self, name):
