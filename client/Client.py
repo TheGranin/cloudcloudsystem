@@ -3,7 +3,7 @@ Created on Apr 8, 2013
 
 @author: Simon
 '''
-import httplib, pygame, StringIO, thread, argparse, time, random
+import httplib, pygame, StringIO, thread, argparse, time, random, datetime
 from pygame.locals import *
 
 
@@ -15,7 +15,6 @@ class Client():
         
         self._setup_menu()
         
-          
         self.screen = None
         
         self.running = True
@@ -23,10 +22,10 @@ class Client():
         self.image = None
         self.font = None
         
+        self.fifteenMinutes = datetime.timedelta(minutes=15)
+        
         self.mode = " "
         self.cloude = 0.0
-        
-        #self.getCloudValue("")
     
     def start(self, auto = False):
         thread.start_new_thread(self.display, ())
@@ -46,7 +45,8 @@ class Client():
                 self.mode = "AUTO TEST: Sleep: "+str(sleep-x)+" sec"
                 time.sleep(1)
             
-            self.getCloudValue("0")
+            #self.getCloudValue("2003/03/22/0115")
+            self.smoothScrool("2003/03/22/0115", "2003/03/22/0000")
             
             
                 
@@ -87,9 +87,12 @@ class Client():
             
             if self.font != None:
                 self.screen.blit(self.fontType.render(str(self.font), 0, (255,0,0)), (40,500))
+                
+            if self.cloude != None:
+                self.screen.blit(self.fontType.render("Value: "+ str(self.cloude), 0, (255,0,0)), (40,80))
             
             self.screen.blit(self.fontType.render(str(self.mode), 0, (255,0,0)), (40,40))
-            self.screen.blit(self.fontType.render("Value: "+ str(self.cloude), 0, (255,0,0)), (40,80))
+            
             
             pygame.display.flip()
                 
@@ -113,37 +116,69 @@ class Client():
             print self.help
     
     def smoothScrool(self, timeStart, timeEnd):
-        pass
+        startDate = datetime.datetime.strptime(timeStart, "%Y/%m/%d/%H%M")
+        endDate = datetime.datetime.strptime(timeEnd, "%Y/%m/%d/%H%M")
+        
+        while (startDate < endDate):
+            startDate = startDate + self.fifteenMinutes
+            print startDate
+            self.getCloudValue(startDate.strftime("%Y/%m/%d/%H%M"))
+                                     
+        
             
     def getCloudValue(self, time):
-        #try:
-            time = "/2003/03/22/0115"#time
+        try:
+            #time = "/2003/03/22/0115"#time
+            
+            date = datetime.datetime.strptime(time, "%Y/%m/%d/%H%M")
+            
+            #date = date + (random.randrange(0, 100)*self.fifteenMinutes)
             
             self.mode = "Gets date:" + time
             
-            msg = self.Get(time)
+            print date.strftime("/%Y/%m/%d/%H%M")
+            msg = self.Get(date.strftime("/%Y/%m/%d/%H%M"))
         
             print msg.status, msg.reason
-            print msg.status
-            #if msg.status[0] == 200:
-            #    self.mode = "Got picture"
             
-            jpeg_data = msg.read()
-        
-            buff = StringIO.StringIO()
-            buff.write(jpeg_data)
-            buff.seek(0)
+            if msg.status == 200:
+                self.mode = "Got picture"
+                
+                jpeg_data = msg.read()
+                
+                buff = StringIO.StringIO()
+                buff.write(jpeg_data)
+                buff.seek(0)
+                
+                self.image = pygame.image.load(buff)
+                self.font = time
             
-            self.image = pygame.image.load(buff)
-            self.font = time
+            elif msg.status == 303:
+                self.mode = "GOT REDIRECT"
+            
+            elif msg.status == 400:
+                self.mode = "SERVER ERROR BAD REQUEST"
+                
+            elif msg.status == 404:
+                self.mode = "SERVER ERROR DATE NOT FOUND"
+                self.image = None
+                self.font = "DATE NOT FOUND"
+                
+            else:
+                self.mode = "SERVER ERROR"
+                 
             
             
             
             #with open('out.jpg', 'wb') as out_file:
             #    out_file.write(jpeg_data)
    
-        #except:
-        #    print "Client Error"
+        except:
+            print "Client Error"
+            self.mode = "CLIENT ERROR"
+            self.font = "CLIENT COLD NOT CONNECT"
+            self.cloude = None
+            self.image = None
         
     def _setup_menu(self):
         self.help = """Cloud commands:
