@@ -3,7 +3,7 @@ Created on Apr 8, 2013
 
 @author: Simon
 '''
-import httplib, pygame, StringIO, thread, argparse, time, random, datetime
+import httplib, pygame, cStringIO, thread, argparse, time, random, datetime
 from pygame.locals import *
 from miniboids import *
 
@@ -13,7 +13,7 @@ class TYPES():
 
 class Client():
     def __init__(self):
-        self.BASE_URL = "129.242.22.192"
+        self.BASE_URL = "0.0.0.0"
         self.PORT = 8080
         
         self._setup_menu()
@@ -111,7 +111,8 @@ class Client():
                 self.command(cmd)
             
     def display(self):
-        pygame.init()  
+        pygame.display.init()
+        pygame.font.init()
         clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((704, 576))
         self.fontType = pygame.font.SysFont("None", 40)
@@ -132,7 +133,7 @@ class Client():
                             return
                         
             pygame.draw.rect(self.screen, (3,3,3), (0, 0, self.screen.get_width(), self.screen.get_height()))
-            time_passed = clock.tick(100)
+            time_passed = clock.tick(30)
             time_passed_seconds = time_passed / 1000.0
             
             if self.image != None:
@@ -162,8 +163,9 @@ class Client():
         conn = httplib.HTTPConnection(self.BASE_URL, self.PORT)        
         conn.request("GET", path)
         response = conn.getresponse()
+        data = (response.status, response.read())
         conn.close()
-        return response        
+        return data 
              
     def command(self, cmd):
         method = cmd[0]
@@ -199,34 +201,33 @@ class Client():
             #self.mode = "Gets date:" + time
             
             print date.strftime("/%Y/%m/%d/%H%M")
-            msg = self.Get(date.strftime("/%Y/%m/%d/%H%M"))
+            status, data = self.Get(date.strftime("/%Y/%m/%d/%H%M"))
         
-            print msg.status, msg.reason
-            
-            if msg.status == 200:
+            print status
+            if status == 200:
                 #self.mode = "Got picture"
                 
-                jpeg_data = msg.read()
-                
-                buff = StringIO.StringIO()
+                jpeg_data = data
+               
+                buff = cStringIO.StringIO()
                 buff.write(jpeg_data)
                 buff.seek(0)
                 
                 self.image = pygame.image.load(buff)
                 self.font = time
             
-            elif msg.status == 303:
+            elif status == 303:
                 self.font = "GOT REDIRECT"
             
-            elif msg.status == 400:
+            elif status == 400:
                 self.font = "SERVER ERROR BAD REQUEST"
                 
-            elif msg.status == 404:
+            elif status == 404:
                 #self.mode = "SERVER ERROR DATE NOT FOUND"
                 self.image = None
                 self.font = "DATE NOT FOUND"
                 
-            else:
+            else: 
                 self.font = "SERVER ERROR"
                  
             
@@ -235,8 +236,10 @@ class Client():
             #with open('out.jpg', 'wb') as out_file:
             #    out_file.write(jpeg_data)
    
-        except:
+        except Exception as e:
+
             print "Client Error"
+            print e
             self.mode = "CLIENT ERROR"
             self.font = "CLIENT COLD NOT CONNECT"
             self.cloude = None

@@ -3,7 +3,7 @@ import math
 import time
 import random
 from pygame.locals import*
-from config import *
+#from config import *
 
 
 screen_res = (704, 576)#(SCREEN_WIDTH, SCREEN_HEIGHT)

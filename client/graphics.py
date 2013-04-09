@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import pygame, os, random
-from config import *
-import thread
+#import thread
 import time
 from miniboids import *
 from mutex import *
