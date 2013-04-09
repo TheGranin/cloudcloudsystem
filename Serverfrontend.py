@@ -11,7 +11,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
-	
+
 	#Handler for the GET requests
 	def do_GET(self):
 		work = self.reqWorkResp()
@@ -20,31 +20,21 @@ class myHandler(BaseHTTPRequestHandler):
 			
 			#Caluclate the cloudiness for that time
 			print self.path
-			path = self.path.split('/')
-			if len(path) < 5:
-				print "Invalid request"
-				self.send_response(400)
-				self.end_headers()
-				return
-			  
-			year = path[1]
-			month = path[2]
-			day = path[3]
-			time = path[4]
-			
-			#self.calculateCloudiness(year, month, day, time)
-			self.send_response(200)
-			self.send_header('Content-type','jpg')
-			
-			image, cloudValue = self.getBestImage(year, month, day, time)
+			date = datetime.strptime(self.path, "/%Y/%m/%d/%H%M")
+			image, cloudValue = self.getBestImage(date)
 
 			print "CC =", cloudValue
+	
+	
+			self.send_response(200)
+			self.send_header('Content-type','jpg')
 			self.send_header('x-CC',cloudValue)
 			self.end_headers()
 
 			
 			self.wfile.write(image)
-			return
+			print "Request complete"
+			
 		else:
 			self.send_response(303)
 			
@@ -53,7 +43,6 @@ class myHandler(BaseHTTPRequestHandler):
 			self.send_header('Location','http://0.0.0.0:8080')
 			self.end_headers()
 
-			return
 		
 	def reqWorkResp(self):
 		response = urllib2.urlopen(C3Server)
@@ -62,7 +51,6 @@ class myHandler(BaseHTTPRequestHandler):
 	
 	def calculateCloudiness(self, image):
 		try:
-			#print "IMAGE", image
 			
 			buff = cStringIO.StringIO()
 			buff.write(image)
@@ -82,31 +70,31 @@ class myHandler(BaseHTTPRequestHandler):
 					if( ( r + b + g ) > 160 ): 
 						Nbright += 1
 					if ( b > ( (r + g) / 1.9 ) ):
-						Nbw += 1;
+						Nbw += 1
 					else:
 						N+=1
 			if ( Nbright > ( 626*266 )*0.4 ):
-				CC = 100.0 - Nbw*100.0/(626*266);
+				CC = 100.0 - Nbw*100.0/(626*266)
 			else:
-				CC = 0.0; 
-			return CC; 
+				CC = 0.0 
+			return CC 
 		except IOError:
 			print "cannot convert", infile
+			return -1
 		
-	def getImage(self, year, month, day, time):
-		req = "wcam0_" + year + month + day +"_"+ time + ".jpg"
-		response = urllib2.urlopen(C2Server+ year +"/"+ month + "/" + day + "/" + req )
+	def getImage(self, date):
+		response = urllib2.urlopen(C2Server+ date.strftime("%Y/%m/%d/wcam0_%Y%m%d_%H%M.jpg") )
 		return response.read()
 
-	def getBestImage(self,year,month,day,clock):
+	def getBestImage(self, date):
 		pictures = []
-		realDate = datetime(int(year), int(month), int(day), int(clock[0:2]), int(clock[2:4]))
+
 		fifteenMinutes = timedelta(minutes=15)
 		median = 0.0
 		
 		for x in xrange(-2,3):
-			date = realDate + (x * fifteenMinutes)
-			image = self.getImage(str(date.year), date.strftime("%m"), date.strftime("%e"), date.strftime("%H%M"))
+			tmpdate = date + (x * fifteenMinutes)
+			image = self.getImage(tmpdate)
 			
 			
 			CC = self.calculateCloudiness(image)
@@ -124,23 +112,29 @@ class myHandler(BaseHTTPRequestHandler):
 				
 		return (bestPicture, median)
 		
-		
-		
-		
-		
-		
-try:
-	parser = argparse.ArgumentParser()
-	parser.add_argument("-p", "--port", type = int ,help = "which port should the server run on", default = "8080")
 
-	
-	args = parser.parse_args()
-	server = HTTPServer(('', args.port), myHandler)
-	print 'Started httpserver on port' , args.port
-	
-	#Wait forever for incoming http requests
-	server.serve_forever()
+	#
+	def address_string(self):
+		host, port = self.client_address[:2]
+		#return socket.getfqdn(host)
+		return host
+		
+		
+		
+if __name__ == '__main__':
+	try:
+		#Setting up the correct arguments
+		parser = argparse.ArgumentParser()
+		parser.add_argument("-p", "--port", type = int ,help = "which port should the server run on", default = "8080")
+		args = parser.parse_args()
+		
+		
+		server = HTTPServer(('', args.port), myHandler)
+		print 'Started httpserver on port' , args.port
 
-except KeyboardInterrupt:
-	print '^C received, shutting down the web server'
-	server.socket.close()
+		#Wait forever for incoming http requests
+		server.serve_forever()
+
+	except KeyboardInterrupt:
+		print '^C received, shutting down the web server'
+		server.socket.close()
