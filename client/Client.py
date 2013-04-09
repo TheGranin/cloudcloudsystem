@@ -5,6 +5,7 @@ Created on Apr 8, 2013
 '''
 import httplib, pygame, StringIO, thread, argparse, time, random, datetime
 from pygame.locals import *
+from miniboids import *
 
 
 
@@ -46,7 +47,7 @@ class Client():
                 time.sleep(1)
             
             #self.getCloudValue("2003/03/22/0115")
-            self.smoothScrool("2003/03/22/0115", "2003/03/22/0000")
+            self.smoothScrool("2003/03/22/0115", "2003/03/22/0400")
             
             
                 
@@ -69,6 +70,11 @@ class Client():
         self.screen = pygame.display.set_mode((704, 576))
         self.fontType = pygame.font.SysFont("None", 40)
         
+        boids = []
+        for x in range(random.randrange(10, 30)):        
+            boids.append(Boid(self.screen))
+        
+        
         while (self.running):
             for event in pygame.event.get():
                     if event.type == QUIT:
@@ -80,10 +86,19 @@ class Client():
                             return
                         
             pygame.draw.rect(self.screen, (3,3,3), (0, 0, self.screen.get_width(), self.screen.get_height()))
-            clock.tick(20)
+            time_passed = clock.tick(100)
+            time_passed_seconds = time_passed / 1000.0
             
             if self.image != None:
                 self.screen.blit(self.image, (0, 0))
+            
+            for boid in boids:
+                boid.update_vectors(boids,[], [])
+                boid.move(time_passed_seconds, self.screen)
+                    
+                boid.draw(self.screen)
+            
+            
             
             if self.font != None:
                 self.screen.blit(self.fontType.render(str(self.font), 0, (255,0,0)), (40,500))
