@@ -205,6 +205,7 @@ class Client():
             self.samples = self.timer.getNumSamples()
         else:
             self.timer.stopTimer(False)
+            self.resTime = 0
         
         headerDict = self._headerToDict(response.getheaders())
         data = (status, response.read(), headerDict)
