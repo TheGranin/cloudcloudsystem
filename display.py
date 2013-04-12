@@ -23,7 +23,7 @@ class Display():
 			cc += i
 		return cc, im
 			
-	def run(self, cache):
+	def run(self, cache, timer):
 		try:
 			pygame.display.init()
 			pygame.font.init()
@@ -31,7 +31,7 @@ class Display():
 			os.environ['SDL_VIDEO_WINDOW_POS'] = str(0) + ',' + str(0)
 			self.screen = pygame.display.set_mode((300, 300))
 			self.fontType = pygame.font.SysFont("None", 40)
-			
+			self.fontType2 = pygame.font.SysFont("None", 20)
 			while (self.running):
 				for event in pygame.event.get():
 						if event.type == QUIT:
@@ -54,7 +54,9 @@ class Display():
 				self.avgIM, self.avgCC = self.caclucateAvg(cache)
 				self.screen.blit(self.fontType.render("Avg Image Hit: "+ str(self.avgIM), 0, (255,0,0)), (10,10))
 				self.screen.blit(self.fontType.render("Avg Cloud Hit: "+ str(self.avgCC), 0, (255,0,0)), (10,50))
-
+				resTime, maxTime, avgTime = timer.getValues()
+				self.screen.blit(self.fontType2.render(str("CUR: %4dms  Max: %4dms"  % (resTime, maxTime)), 0, (255,0,0)), (10,190))
+				self.screen.blit(self.fontType2.render(str("AVG(%d): %4dms" % ( 100, avgTime)), 0, (255,0,0)), (10,210))
 				pygame.display.flip()
 		except Exception as e:
 			print "--------------------ERRROR ON PYGAME----------------------"

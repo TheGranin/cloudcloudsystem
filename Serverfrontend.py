@@ -3,13 +3,14 @@ from cache import *
 from display import *
 import BaseHTTPServer
 import SocketServer
-from Timer import Timer
+from threadSafeTimer import ThreadSafeTimer
+import time
 
 global cache
 cache = Cache(imageCacheSize, ccCacheSize)
 display = Display()
-thread.start_new_thread(display.run, (cache,))
-time = Timer()
+timer = ThreadSafeTimer(100)
+thread.start_new_thread(display.run, (cache,timer))
 
 class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 	"""
@@ -20,7 +21,7 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		"""
 		Handler for the GET requests
 		"""
-		time.
+		startTime = time.time() * 1000
 		work = self.reqWorkResp()
 		if work == "YES":
 			
@@ -48,9 +49,9 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			self.send_header('x-CC',cloudValue)
 			self.end_headers()
 
-			print "Request complete"
 			self.wfile.write(image)
-			
+			print "Request complete"
+			timer.time(startTime, time.time()*1000)
 			
 		else:
 			#Redirect the client
