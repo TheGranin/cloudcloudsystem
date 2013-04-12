@@ -60,7 +60,7 @@ class Boid(Vector2D):
 		
 		# Radius
 		self.flock_radius = 70
-		self.collision_radius = 15
+		self.collision_radius = 75
 		self.collision_radius_objects = 20
 		self.collision_radius_other_boids = 25
 		
