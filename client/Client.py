@@ -3,65 +3,84 @@ Created on Apr 8, 2013
 
 @author: Simon
 '''
-import httplib, pygame, cStringIO, thread, argparse, time, random, datetime
+import httplib, pygame, cStringIO, thread, argparse, time, random, datetime, Timer
 from pygame.locals import *
 from miniboids import *
+
+class SETTINGS():
+    MAX_REDIRS = 2
+    START_ADDRESS = "129.242.22.192"
+    START_PORT = 8080
+    
+    AVG_SAMPLES = 10
+
 
 class TYPES():
     REQ_TYPE_DATE = 0
     REQ_TYPE_SEQ = 1
+    
+    
+
+        
 
 class Client():
     def __init__(self):
-        self.BASE_URL = "0.0.0.0"
-        self.PORT = 8080
+        # Communication
+        self.BASE_URL = SETTINGS.START_ADDRESS
+        self.PORT = SETTINGS.START_PORT
         
-        self._setup_menu()
-        
+        # GRAPHICS
         self.screen = None
-        
         self.running = True
-        
         self.image = None
         self.font = None
+        self.mode = " "
+        self.cloude = 0.0
+        
+        
+        self.timer = Timer.Timer(SETTINGS.AVG_SAMPLES)
+        
+        
+        self.resTime = 0
+        self.maxTime = 0
+        self.avgTime = 0
         
         self.fifteenMinutes = datetime.timedelta(minutes=15)
         
-        self.mode = " "
-        self.cloude = 0.0
+        self.redirects = 0
+        self.maxRedirs = SETTINGS.MAX_REDIRS
+        
+        self._setup_menu()
+        
     
     def start(self, auto = False):
         thread.start_new_thread(self.display, ())
-        #self.display()
         if auto:
             self.autoTest()
         else:
             self.run()
             
-    def autoTest(self):
-        print "AutoTest"
-        
+    def autoTest(self):        
         while(self.running):
-            self.mode = "AUTO TEST"
             sleep = random.randrange(0, 5)
             for x in range(0, sleep+1):
-                self.mode = "AUTO TEST: Sleep: "+str(sleep-x)+" sec"
+                self.mode = "AUTO TEST: Sleep: "+ str(sleep-x)+" sec"
                 time.sleep(1)
             
-            requestType = self.getRandReqType()
+            requestType = self._getRandReqType()
             if requestType == TYPES.REQ_TYPE_DATE:
                 self.autoGet()
             elif requestType == TYPES.REQ_TYPE_SEQ:
                 self.autoScrool()
     
-    def getRandReqType(self):
+    def _getRandReqType(self):
         range = random.randrange(0, 101)
         if range > 50:
             return TYPES.REQ_TYPE_SEQ
         else:
             return TYPES.REQ_TYPE_DATE
             
-    def randDate(self):
+    def _randDate(self):
         year = 2003
         month = 3#random.randrange(1, 12)
         day = 22#random.randrange(1, 28)
@@ -74,7 +93,7 @@ class Client():
         numGets = random.randrange(1, 20)
         for x in range(1, numGets+1):
             self.mode = str("RANDOM GET: %d of total %d images" % (x, numGets))
-            self.getCloudValue(self.randDate())
+            self.getCloudValue(self._randDate())
               
     def autoScrool(self):
         year = 2003
@@ -146,26 +165,42 @@ class Client():
                 boid.draw(self.screen)
             
             
+            self.screen.blit(self.fontType.render(str(self.mode), 0, (255,0,0)), (40,40))
             
             if self.font != None:
                 self.screen.blit(self.fontType.render(str(self.font), 0, (255,0,0)), (40,500))
                 
             if self.cloude != None:
-                self.screen.blit(self.fontType.render("Value: "+ str(self.cloude), 0, (255,0,0)), (40,80))
+                self.screen.blit(self.fontType.render(str("Clouds: %.1f %%" % (self.cloude)), 0, (255,0,0)), (40,80))
             
-            self.screen.blit(self.fontType.render(str(self.mode), 0, (255,0,0)), (40,40))
             
+            self.screen.blit(self.fontType.render(str("CUR: %4dms    Max: %4dms    AVG(%d): %4dms" % (self.resTime, self.maxTime, SETTINGS.AVG_SAMPLES, self.avgTime)), 0, (255,0,0)), (40,530))
             
             pygame.display.flip()
                 
     
     def Get(self, path):
         conn = httplib.HTTPConnection(self.BASE_URL, self.PORT)        
+        
+        self.timer.startTimer()
         conn.request("GET", path)
+        
+        
         response = conn.getresponse()
-        data = (response.status, response.read())
+        
+        self.timer.stopTimer()
+        
+        self.resTime, self.maxTime, self.avgTime = self.timer.getValues()
+        headerDict = self._headerToDict(response.getheaders())
+        data = (response.status, response.read(), headerDict)
         conn.close()
-        return data 
+        return data
+    
+    def _headerToDict(self, headers):
+        dict = {}
+        for header in headers:
+            dict[header[0]] = header[1]
+        return dict 
              
     def command(self, cmd):
         method = cmd[0]
@@ -201,12 +236,14 @@ class Client():
             #self.mode = "Gets date:" + time
             
             print date.strftime("/%Y/%m/%d/%H%M")
-            status, data = self.Get(date.strftime("/%Y/%m/%d/%H%M"))
+            
+            status, data, headers = self.Get(date.strftime("/%Y/%m/%d/%H%M"))
         
+            print headers        
             print status
-            if status == 200:
-                #self.mode = "Got picture"
-                
+            
+            if status == httplib.OK:
+                #self.mode = "Got picture"    
                 jpeg_data = data
                
                 buff = cStringIO.StringIO()
@@ -215,19 +252,25 @@ class Client():
                 
                 self.image = pygame.image.load(buff)
                 self.font = time
+                self.cloude = float(headers['x-cc'])
             
-            elif status == 303:
+            elif status == httplib.SEE_OTHER:
                 self.font = "GOT REDIRECT"
+                print "REDIRECT TO: ", headers["location"]
+                self.redirects += 1
+                if self.redirects >= self.maxRedirs:
+                    print "Can't connect to server"
             
-            elif status == 400:
+            elif status == httplib.BAD_REQUEST:
                 self.font = "SERVER ERROR BAD REQUEST"
                 
-            elif status == 404:
+            elif status == httplib.NOT_FOUND:
                 #self.mode = "SERVER ERROR DATE NOT FOUND"
                 self.image = None
                 self.font = "DATE NOT FOUND"
                 
-            else: 
+            else:
+                print "STATUS IS", status 
                 self.font = "SERVER ERROR"
                  
             
