@@ -1,8 +1,6 @@
-import argparse
-import datetime
-
+import argparse, thread
 from cache import *
-
+from display import *
 import web
         
 urls = (
@@ -16,7 +14,6 @@ class index:
 	"""
 	Class for server communication, will handle any incomming request
 	"""
-
 
 	def GET(self, path):
 		"""
@@ -51,7 +48,7 @@ class index:
 			
 		else:
 			#Redirect the client
-			#UPDATE IN FUTURE
+			#TODO UPDATE IN FUTURE
 			#self.send_header('Location','http://0.0.0.0:'+ ServersPorts[random.randint(0,2)])
 			raise web.seeother("http://vg.no")
 		
@@ -63,18 +60,6 @@ class index:
 		return response.read()
 
 
-		
-	def getImageAndCloudniess(self,date):
-		"""
-		Function that gets the image and returns a tuple of the image and cloudiness if the image exists, if not -1
-		"""
-		image = cache.getImage(date)
-		if image == -1:
-			return -1
-		
-		CC = cache.calculateCloudiness(image)
-		return (image,CC)
-
 	def getBestImage(self, date):
 		"""
 		Finds the image that best represent the cloudiness over a hour and the meidan over that cloudiness 
@@ -83,7 +68,7 @@ class index:
 		fifteenMinutes = datetime.timedelta(minutes=15)
 		median = 0.0
 		
-		tupleData = self.getImageAndCloudniess(date) 
+		tupleData = cache.getImageAndCloudniess(date) 
 		if tupleData == -1:
 			return -1
 		
@@ -91,7 +76,7 @@ class index:
 		
 		for x in [-2,2,-1,1]:
 			tmpdate = date + (x * fifteenMinutes)
-			tupleData = self.getImageAndCloudniess(tmpdate) 
+			tupleData = cache.getImageAndCloudniess(tmpdate) 
 			if tupleData == -1:
 				continue
 
@@ -99,15 +84,16 @@ class index:
 			median += tupleData[1]
 
 		median = median/len(pictures)
-		bestPicture = ""
 		bestValue = 100.0
 		for image in pictures:
 			if abs(image[1] - median) < bestValue:
-				bestPicture = image[0]
+				tupleData = image
 				bestValue = image[1]
-				
-		return (bestPicture, median)
 		
+		bestImage = tupleData[0]
+		if bestImage == None:
+			bestImage = cache.getImage(tupleData[2])
+		return (bestImage, median)
 
 
 
@@ -117,6 +103,8 @@ if __name__ == '__main__':
 	parser.add_argument("-s", type = int ,help = "Which server number are you", default = "1")
 	args = parser.parse_args()
 
+	display = Display()
+	thread.start_new_thread(display.run, (cache, ))
 	app = web.application(urls, globals())
 	app.run()   
 	

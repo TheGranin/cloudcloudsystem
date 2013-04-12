@@ -13,7 +13,7 @@ urls = ('/', 'index')
 class index():
     def GET(self):
         randNum = random.randrange(0, 100);
-        if (randNum < 100):
+        if (randNum < 70):
             return "YES"
         else:
             return "NO"
