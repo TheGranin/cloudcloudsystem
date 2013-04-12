@@ -35,7 +35,7 @@ class Timer():
 
             
     def _newValueToAvg(self, trackTime):
-        if len(self.avgSamples) > self.sampleCount:
+        if len(self.avgSamples) >= self.sampleCount:
             self.avgSamples.pop(0)
         else:
             self.numSamples += 1
