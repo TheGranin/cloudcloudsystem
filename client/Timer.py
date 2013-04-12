@@ -21,24 +21,23 @@ class Timer():
     def startTimer(self):
         self.timer = int(time.time() * 1000)
 
-    def stopTimer(self):
-        trackTime = int((time.time() * 1000) - self.timer)
-        print str(trackTime) + "ms"
-        self._setMax(trackTime)
-        self._newValueToAvg(trackTime)
-        self.lastTrack = trackTime
+    def stopTimer(self, validMeasure = True):
+        if validMeasure:
+            trackTime = int((time.time() * 1000) - self.timer)
+            self._setMax(trackTime)
+            self._newValueToAvg(trackTime)
+            self.lastTrack = trackTime
         
     def _setMax(self, trackTime):
         if trackTime > self.maxTime:
             self.maxTime = trackTime
-            print "New max time", self.maxTime
+
             
     def _newValueToAvg(self, trackTime):
         if len(self.avgSamples) > self.sampleCount:
             self.avgSamples.pop(0)
             
         self.avgSamples.append(trackTime)
-        print self.avgSamples
         
     def calcAvg(self):
         numSamples = len(self.avgSamples)
@@ -64,3 +63,5 @@ if __name__ == '__main__':
             
         timer.stopTimer()
         print timer.calcAvg()
+        
+        from socket import gethostname; print gethostname()
