@@ -17,6 +17,7 @@ class Timer():
         
         self.timer = 0
         self.lastTrack = 0
+        self.numSamples = 0
         
     def startTimer(self):
         self.timer = int(time.time() * 1000)
@@ -36,8 +37,13 @@ class Timer():
     def _newValueToAvg(self, trackTime):
         if len(self.avgSamples) > self.sampleCount:
             self.avgSamples.pop(0)
+        else:
+            self.numSamples += 1
             
         self.avgSamples.append(trackTime)
+    
+    def getNumSamples(self):
+        return self.numSamples
         
     def calcAvg(self):
         numSamples = len(self.avgSamples)

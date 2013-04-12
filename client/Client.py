@@ -6,13 +6,14 @@ Created on Apr 8, 2013
 import httplib, pygame, cStringIO, thread, argparse, time, random, datetime, Timer
 from pygame.locals import *
 from miniboids import *
+from socket import gethostname
 
 class SETTINGS():
     MAX_REDIRS = 2
     START_ADDRESS = "129.242.22.192"
     START_PORT = 8080
     
-    AVG_SAMPLES = 10
+    AVG_SAMPLES = 100
 
 
 class TYPES():
@@ -29,6 +30,8 @@ class Client():
         self.BASE_URL = SETTINGS.START_ADDRESS
         self.PORT = SETTINGS.START_PORT
         
+        self.MY_NAME =  gethostname()
+        
         # GRAPHICS
         self.screen = None
         self.running = True
@@ -44,6 +47,7 @@ class Client():
         self.resTime = 0
         self.maxTime = 0
         self.avgTime = 0
+        self.samples = 0
         
         self.fifteenMinutes = datetime.timedelta(minutes=15)
         
@@ -104,7 +108,7 @@ class Client():
         minute -= minute % 15 
         start = "%d/%02d/%02d/%02d%02d" % (year, month, day, hour, minute)
         
-        scroll_intervall = random.randrange(1, 4)
+        scroll_intervall = random.randrange(1, 30)
         
         if scroll_intervall == 4:
             day = random.randrange(day, 28)
@@ -174,7 +178,7 @@ class Client():
                 self.screen.blit(self.fontType.render(str("Clouds: %.1f %%" % (self.cloude)), 0, (255,0,0)), (40,80))
             
             
-            self.screen.blit(self.fontType.render(str("CUR: %4dms    Max: %4dms    AVG(%d): %4dms" % (self.resTime, self.maxTime, SETTINGS.AVG_SAMPLES, self.avgTime)), 0, (255,0,0)), (40,530))
+            self.screen.blit(self.fontType.render(str("CUR: %4dms    Max: %4dms    AVG(%d): %4dms" % (self.resTime, self.maxTime, self.samples, self.avgTime)), 0, (255,0,0)), (40,530))
             
             pygame.display.flip()
                 
@@ -182,17 +186,29 @@ class Client():
     def Get(self, path):
         conn = httplib.HTTPConnection(self.BASE_URL, self.PORT)        
         
+        try:
+            conn.putheader('x-file', str(self.MY_NAME))
+        except Exception as e:
+            print "FUCK", e
+        #conn.p
+        
         self.timer.startTimer()
         conn.request("GET", path)
         
         
         response = conn.getresponse()
+        status = response.status
         
-        self.timer.stopTimer()
+        if status == httplib.OK:
+            self.timer.stopTimer()
+            self.resTime, self.maxTime, self.avgTime = self.timer.getValues()
+            self.samples = self.timer.getNumSamples()
+        else:
+            self.timer.stopTimer(False)
         
-        self.resTime, self.maxTime, self.avgTime = self.timer.getValues()
         headerDict = self._headerToDict(response.getheaders())
-        data = (response.status, response.read(), headerDict)
+        data = (status, response.read(), headerDict)
+        
         conn.close()
         return data
     
