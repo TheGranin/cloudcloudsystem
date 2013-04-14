@@ -70,9 +70,13 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		Request an answer from the C3 server
 		 MUST HAVE  at the end servernumber=3&client=tile-1-2
 		"""
-		print C3Server +"servernumber=" + str(serverNumber) +"&client="+ tile 
-		response = urllib2.urlopen(C3Server +"servernumber=" + str(serverNumber) +"&client="+ tile )
-		return response.read()
+		try:
+			print C3Server +"servernumber=" + str(serverNumber) +"&client="+ tile 
+			response = urllib2.urlopen(C3Server +"servernumber=" + str(serverNumber) +"&client="+ tile )
+			return response.read()
+		except Exception as e:
+			print "C3 Server error"
+			print e
 
 
 	def getBestImage(self, date):
