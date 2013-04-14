@@ -12,8 +12,10 @@ C3Server = "http://0.0.0.0:4321/"
 imageCacheSize = 50
 ccCacheSize = 50000
 
-def getRandomServer():
-	return Servers[random.randint(0,len(Servers))]
+
+def getRandomServer()
+   return Servers[random.randint(0,len(Servers)-1)]
+
 
 def roundTime(dt=None, roundTo=60):
    """Round a datetime object to any time laps in seconds
