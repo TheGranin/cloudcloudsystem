@@ -32,8 +32,8 @@ class Client():
         self.BASE_URL = SETTINGS.START_ADDRESS
         self.PORT = SETTINGS.START_PORT
         
-        self.MY_NAME =  gethostname()
-        
+        self.MY_NAME =  gethostname().replace('.local','')
+	
         # GRAPHICS
         self.screen = None
         self.running = True
