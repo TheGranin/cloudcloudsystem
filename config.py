@@ -10,7 +10,7 @@ C3Server = "http://0.0.0.0:4321/"
 imageCacheSize = 50
 ccCacheSize = 50000
 
-def getRandomServer()
+def getRandomServer():
 	return Servers[random.randint(0,len(Servers))]
 
 def roundTime(dt=None, roundTo=60):
