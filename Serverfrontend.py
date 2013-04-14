@@ -24,7 +24,8 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		#print self.get_header()
 		startTime = time.time() * 1000
 		work = self.reqWorkResp()
-		if work == "YES":
+		if "YES" in work:
+			print "YAY"
 			
 			try:
 				date = datetime.datetime.strptime(self.path, "/%Y/%m/%d/%H%M")

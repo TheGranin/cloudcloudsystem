@@ -55,8 +55,12 @@ class Display():
 				self.screen.blit(self.fontType.render("Avg Image Hit: "+ str(self.avgIM), 0, (255,0,0)), (10,10))
 				self.screen.blit(self.fontType.render("Avg Cloud Hit: "+ str(self.avgCC), 0, (255,0,0)), (10,50))
 				resTime, maxTime, avgTime = timer.getValues()
-				self.screen.blit(self.fontType2.render(str("CUR: %4dms  Max: %4dms"  % (resTime, maxTime)), 0, (255,0,0)), (10,190))
-				self.screen.blit(self.fontType2.render(str("AVG(%d): %4dms" % (timer.getNumSamples(), avgTime)), 0, (255,0,0)), (10,210))
+				
+self.screen.blit(self.fontType2.render(str("CUR: %4dms  Max: %4dms"  % 
+(resTime, maxTime)), 0, (255,255,0)), (10,190))
+				
+self.screen.blit(self.fontType2.render(str("AVG(%d): %4dms" % 
+(timer.getNumSamples(), avgTime)), 0, (255,255,0)), (10,210))
 				pygame.display.flip()
 		except Exception as e:
 			print "--------------------ERRROR ON PYGAME----------------------"

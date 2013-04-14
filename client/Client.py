@@ -10,7 +10,7 @@ from socket import gethostname
 
 class SETTINGS():
     MAX_REDIRS = 3
-    START_ADDRESS = "129.242.22.192"
+    START_ADDRESS = "tile-5-1"
     START_PORT = 8080
     
     AVG_SAMPLES = 100
@@ -81,15 +81,15 @@ class Client():
     
     def _getRandReqType(self):
         range = random.randrange(0, 101)
-        if range > 50:
+        if range > 30:
             return TYPES.REQ_TYPE_SEQ
         else:
             return TYPES.REQ_TYPE_DATE
             
     def _randDate(self):
-        year = 2003
-        month = 3#random.randrange(1, 12)
-        day = 22#random.randrange(1, 28)
+        year = random.randrange(2003, 2012)
+        month = random.randrange(1, 12)
+        day = random.randrange(1, 28)
         hour = random.randrange(1, 23)
         minute = random.randrange(0, 59)
         minute -= minute % 15
@@ -102,15 +102,15 @@ class Client():
             self.getCloudValue(self._randDate())
               
     def autoScrool(self):
-        year = 2003
-        month = 3#random.randrange(1, 12)
-        day = 22#random.randrange(1, 28)
+        year = random.randrange(2003, 2012)
+        month = random.randrange(1, 12)
+        day = random.randrange(1, 28)
         hour = random.randrange(1, 23)
         minute = random.randrange(0, 59)
         minute -= minute % 15 
         start = "%d/%02d/%02d/%02d%02d" % (year, month, day, hour, minute)
         
-        scroll_intervall = random.randrange(1, 30)
+        scroll_intervall = random.randrange(1, 5)
         
         if scroll_intervall == 4:
             day = random.randrange(day, 28)
@@ -278,6 +278,7 @@ class Client():
                 self.redirects = 0
             
             elif status == httplib.SEE_OTHER:
+		return
                 self.font = "GOT REDIRECT"
                 
                 self.redirects += 1
