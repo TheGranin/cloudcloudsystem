@@ -29,8 +29,9 @@ class TYPES():
 class Client():
     def __init__(self):
         # Communication
-        self.BASE_URL = SETTINGS.START_ADDRESS
-        self.PORT = SETTINGS.START_PORT
+        ip, port = config.getRandomServer()
+        self.BASE_URL = ip#SETTINGS.START_ADDRESS
+        self.PORT = port#SETTINGS.START_PORT
         
         self.MY_NAME =  gethostname().replace('.local','')
 	
@@ -41,10 +42,7 @@ class Client():
         self.font = None
         self.mode = " "
         self.cloude = 0.0
-        
-        print config.ServersPorts 
-        
-        
+                
         self.timer = Timer.Timer(SETTINGS.AVG_SAMPLES)
         
         
