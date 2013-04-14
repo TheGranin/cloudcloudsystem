@@ -73,7 +73,8 @@ class Client():
                 self.mode = "AUTO TEST: Sleep: "+ str(sleep-x)+" sec"
                 time.sleep(1)
             
-            requestType = self._getRandReqType()
+            #requestType = self._getRandReqType()
+	    requestType = TYPES.REQ_TYPE_SEQ
             if requestType == TYPES.REQ_TYPE_DATE:
                 self.autoGet()
             elif requestType == TYPES.REQ_TYPE_SEQ:
