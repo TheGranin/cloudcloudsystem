@@ -52,8 +52,8 @@ class Display():
 					self.screen.blit(self.fontType.render("Gathering Data..."+str(self.prosent) + "%", 0, (255,0,0)), (10,90))
 				
 				self.avgIM, self.avgCC = self.caclucateAvg(cache)
-				self.screen.blit(self.fontType.render("Avg Image Hit: "+ str(self.avgIM), 0, (255,255,0)), (10,10))
-				self.screen.blit(self.fontType.render("Avg Cloud Hit: "+ str(self.avgCC), 0, (255,255,0)), (10,50))
+				self.screen.blit(self.fontType.render("Avg Image Hit: "+ str(self.avgIM) +"%", 0, (255,255,0)), (10,10))
+				self.screen.blit(self.fontType.render("Avg Cloud Hit: "+ str(self.avgCC) +"%", 0, (255,255,0)), (10,50))
 				resTime, maxTime, avgTime = timer.getValues()
 				
 				self.screen.blit(self.fontType2.render(str("CUR: %4dms  Max: %4dms"  % (resTime, maxTime)), 0, (255,255,0)), (10,190))

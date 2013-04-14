@@ -6,11 +6,13 @@ import SocketServer
 from threadSafeTimer import ThreadSafeTimer
 import time
 
+
 global cache
 cache = Cache(imageCacheSize, ccCacheSize)
 display = Display()
 timer = ThreadSafeTimer(99)
 thread.start_new_thread(display.run, (cache,timer))
+serverNumber = 0
 
 class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 	"""
@@ -23,10 +25,10 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		"""
 		#print self.get_header()
 		startTime = time.time() * 1000
-		work = self.reqWorkResp()
+		
+		tile = self.headers.get('x-tile')
+		work = self.reqWorkResp(tile)
 		if "YES" in work:
-			print "YAY"
-			
 			try:
 				date = datetime.datetime.strptime(self.path, "/%Y/%m/%d/%H%M")
 				date = roundTime(date,roundTo=15*60)
@@ -58,16 +60,18 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		else:
 			#Redirect the client
 			self.send_response(303)
-			self.send_header('Location','129.242.22.192:8080')
+			self.send_header('Location',Servers[random.randint(0,2)])
 			self.end_headers()
 			#TODO UPDATE IN FUTURE
 			#self.send_header('Location','http://0.0.0.0:'+ ServersPorts[random.randint(0,2)])
 		
-	def reqWorkResp(self):
+	def reqWorkResp(self, tile):
 		"""
 		Request an answer from the C3 server
+		 MUST HAVE  at the end servernumber=3&client=tile-1-2
 		"""
-		response = urllib2.urlopen(C3Server)
+		print C3Server +"servernumber=" + str(serverNumber) +"&client="+ tile 
+		response = urllib2.urlopen(C3Server +"servernumber=" + str(s) +"&client="+ tile )
 		return response.read()
 
 
@@ -124,9 +128,9 @@ if __name__ == '__main__':
 		#Setting up the correct arguments
 		parser = argparse.ArgumentParser()
 		parser.add_argument("-p", "--port", type = int ,help = "which port should the server run on", default = "8080")
-		parser.add_argument("-s", type = int ,help = "Which server number are you", default = "1")
+		parser.add_argument("-s", "--serverNumber" ,type = int ,help = "Which server number are you", default = "1")
 		args = parser.parse_args()
-
+		serverNumber = arg.serverNumber
 		server = ThreadedHTTPServer(('', args.port), myHandler)
 		print 'Started httpserver on port' , args.port
     
