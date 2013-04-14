@@ -12,7 +12,7 @@ ccCacheSize = 50000
 
 
 def getRandomServer()
-   return Servers[random.randint(0,len(Servers))]
+   return Servers[random.randint(0,len(Servers)-1)]
 
 
 def roundTime(dt=None, roundTo=60):
