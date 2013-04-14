@@ -14,6 +14,11 @@ class SETTINGS():
     START_PORT = 8080
     
     AVG_SAMPLES = 100
+    
+    MIN_RAND_RANGE = 20
+    MAX_RAND_RANGE = 200
+    
+    
 
 
 class TYPES():
@@ -91,7 +96,7 @@ class Client():
         return "%d/%02d/%02d/%02d%02d" % (year, month, day, hour, minute)
         
     def autoGet(self):
-        numGets = random.randrange(1, 20)
+        numGets = random.randrange(SETTINGS.MIN_RAND_RANGE, SETTINGS.MAX_RAND_RANGE)
         for x in range(1, numGets+1):
             self.mode = str("RANDOM GET: %d of total %d images" % (x, numGets))
             self.getCloudValue(self._randDate())
