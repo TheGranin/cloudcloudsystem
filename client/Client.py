@@ -3,14 +3,14 @@ Created on Apr 8, 2013
 
 @author: Simon
 '''
-import httplib, pygame, cStringIO, thread, argparse, time, random, datetime, Timer
+import httplib, pygame, cStringIO, thread, argparse, time, random, datetime, Timer, config
 from pygame.locals import *
 from miniboids import *
 from socket import gethostname
 
 class SETTINGS():
     MAX_REDIRS = 3
-    START_ADDRESS = "tile-5-1"
+    START_ADDRESS = "129.242.22.192"
     START_PORT = 8080
     
     AVG_SAMPLES = 100
@@ -41,6 +41,8 @@ class Client():
         self.font = None
         self.mode = " "
         self.cloude = 0.0
+        
+        print config.ServersPorts 
         
         
         self.timer = Timer.Timer(SETTINGS.AVG_SAMPLES)
@@ -171,15 +173,15 @@ class Client():
                     
                 boid.draw(self.screen)
             
+            self.screen.blit(self.fontType.render(str("Server@: %s, PORT: %d" % (self.BASE_URL, self.PORT)), 0, (255,0,0)), (40,10))
+            self.screen.blit(self.fontType.render(str(self.mode), 0, (255,0,0)), (40,50))
             
-            self.screen.blit(self.fontType.render(str(self.mode), 0, (255,0,0)), (40,40))
+                
+            if self.cloude != None:
+                self.screen.blit(self.fontType.render(str("Clouds: %.1f %%" % (self.cloude)), 0, (255,0,0)), (40,90))
             
             if self.font != None:
                 self.screen.blit(self.fontType.render(str(self.font), 0, (255,0,0)), (40,500))
-                
-            if self.cloude != None:
-                self.screen.blit(self.fontType.render(str("Clouds: %.1f %%" % (self.cloude)), 0, (255,0,0)), (40,80))
-            
             
             self.screen.blit(self.fontType.render(str("CUR: %4dms    Max: %4dms    AVG(%d): %4dms" % (self.resTime, self.maxTime, self.samples, self.avgTime)), 0, (255,0,0)), (40,530))
             
@@ -214,8 +216,6 @@ class Client():
             self.timer.stopTimer(False)
             self.resTime = 0
         
-        
-        
         return data
     
     def _headerToDict(self, headers):
@@ -229,7 +229,7 @@ class Client():
         if method in ["cloud", "c", "-c"]:
             print "Getting cloud value"
             # TODO get cloud
-            self.getCloudValue("a")#cmd[1])
+            self.getCloudValue(cmd[1])
             
         
         elif method in ["help", "h", "-h"]:
@@ -279,7 +279,6 @@ class Client():
                 self.redirects = 0
             
             elif status == httplib.SEE_OTHER:
-		return
                 self.font = "GOT REDIRECT"
                 
                 self.redirects += 1
@@ -306,12 +305,6 @@ class Client():
             else:
                 print "STATUS IS", status 
                 self.font = "SERVER ERROR"
-                 
-            
-            
-            
-            #with open('out.jpg', 'wb') as out_file:
-            #    out_file.write(jpeg_data)
    
         except Exception as e:
 
