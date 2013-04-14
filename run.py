@@ -8,13 +8,14 @@ from config import *
 
 def ssh(tile):
 	#shell = spur.SshShell(hostname="rocksvv.cs.uit.no", username="inf3200", password="ADSpassord")
-	shell.run(["ssh", tile])
-	return shell
+	#shell.run(["ssh", tile])
+	#return shell
 
 def run_server1():
 	#call(["python", "Serverfrontend.py", "-p " + str(Servers[0][1]), "-s 1"])
-	shell = ssh("tile-5-1")
-	shell.run(["ls"])
+	call(["ssh", "tile-5-1"])
+	#shell = ssh("tile-5-1")
+	call(["ls"])
 def run_server2():
 	call(["python", "Serverfrontend.py", "-p " + str(Servers[1][1]), "-s 2"])
 def run_server3():
