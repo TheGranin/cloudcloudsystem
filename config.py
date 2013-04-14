@@ -1,8 +1,10 @@
 import datetime
 
 ServersPorts = [8080,8081,8082]
-C2Server = "http://0.0.0.0:1234/"
-C3Server = "http://0.0.0.0:4321/"
+#C2Server = "http://0.0.0.0:1234/"
+#C3Server = "http://0.0.0.0:4321/"
+C2Server = "http://vvnas00:9909/"
+C3Server = "http://rocksvv.cs.uit.no:9909/?servernumber=3&client=tile-1-2"
 
 imageCacheSize = 50
 ccCacheSize = 50000
