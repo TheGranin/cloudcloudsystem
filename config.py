@@ -1,11 +1,13 @@
 import datetime
 import random
 
-Servers = [('tile-5-1',8080),('tile-4-1',8080),('tile-3-1',8080)]
+#Servers = [('tile-5-1',8080),('tile-4-1',8080),('tile-3-1',8080)]
+Servers = [('129.242.22.192',8080),('129.242.22.192',8081),('129.242.22.192',8082)]
 C2Server = "http://0.0.0.0:1234/"
 C3Server = "http://0.0.0.0:4321/"
 #C2Server = "http://vvnas00:9909/"
 #C3Server = "http://rocksvv.cs.uit.no:9909/?"
+
 
 imageCacheSize = 50
 ccCacheSize = 50000

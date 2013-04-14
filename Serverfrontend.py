@@ -123,7 +123,6 @@ class ThreadedHTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer)
 		
 		
 if __name__ == '__main__':
-
 	try:
 		#Setting up the correct arguments
 		parser = argparse.ArgumentParser()
