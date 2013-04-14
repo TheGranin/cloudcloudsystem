@@ -9,7 +9,7 @@ import time
 global cache
 cache = Cache(imageCacheSize, ccCacheSize)
 display = Display()
-timer = ThreadSafeTimer(100)
+timer = ThreadSafeTimer(99)
 thread.start_new_thread(display.run, (cache,timer))
 
 class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
@@ -21,6 +21,7 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		"""
 		Handler for the GET requests
 		"""
+		#print self.get_header()
 		startTime = time.time() * 1000
 		work = self.reqWorkResp()
 		if work == "YES":
@@ -42,7 +43,7 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 				
 			image, cloudValue = tupleData
-			print "CC =", cloudValue
+			#print "CC =", cloudValue
 	
 			self.send_response(200)
 			self.send_header('Content-type','jpg')
@@ -50,13 +51,13 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			self.end_headers()
 
 			self.wfile.write(image)
-			print "Request complete"
+			#print "Request complete"
 			timer.time(startTime, time.time()*1000)
 			
 		else:
 			#Redirect the client
 			self.send_response(303)
-			self.send_header('Location','http://vg.no')
+			self.send_header('Location','129.242.22.192:8080')
 			self.end_headers()
 			#TODO UPDATE IN FUTURE
 			#self.send_header('Location','http://0.0.0.0:'+ ServersPorts[random.randint(0,2)])
