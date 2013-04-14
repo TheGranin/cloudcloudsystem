@@ -13,7 +13,7 @@ imageCacheSize = 50
 ccCacheSize = 50000
 
 
-def getRandomServer()
+def getRandomServer():
    return Servers[random.randint(0,len(Servers)-1)]
 
 
