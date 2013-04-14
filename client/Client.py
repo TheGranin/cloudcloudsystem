@@ -171,7 +171,7 @@ class Client():
                     
                 boid.draw(self.screen)
             
-            self.screen.blit(self.fontType.render(str("Server@: %s, PORT: %d" % (self.BASE_URL, self.PORT)), 0, (255,0,0)), (40,10))
+            self.screen.blit(self.fontType.render(str("Server@: %s, PORT: %s" % (self.BASE_URL, str(self.PORT))), 0, (255,0,0)), (40,10))
             self.screen.blit(self.fontType.render(str(self.mode), 0, (255,0,0)), (40,50))
             
                 
