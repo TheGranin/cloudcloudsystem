@@ -6,7 +6,7 @@ from config import *
 
 #call(["python", "Serverfrontend.py"])
 
-def ssh(tile):
+#def ssh(tile):
 	#shell = spur.SshShell(hostname="rocksvv.cs.uit.no", username="inf3200", password="ADSpassord")
 	#shell.run(["ssh", tile])
 	#return shell

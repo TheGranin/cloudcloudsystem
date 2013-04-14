@@ -139,7 +139,7 @@ class Client():
     def display(self):
         pygame.display.init()
         pygame.font.init()
-        os.environ['SDL_VIDEO_WINDOW_POS'] = str(300) + ',' + str(0)
+        os.environ['SDL_VIDEO_WINDOW_POS'] = str(310) + ',' + str(0)
         clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((704, 576))
         self.fontType = pygame.font.SysFont("None", 40)
