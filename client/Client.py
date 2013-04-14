@@ -9,7 +9,7 @@ from miniboids import *
 from socket import gethostname
 
 class SETTINGS():
-    MAX_REDIRS = 2
+    MAX_REDIRS = 3
     START_ADDRESS = "129.242.22.192"
     START_PORT = 8080
     
@@ -21,9 +21,6 @@ class TYPES():
     REQ_TYPE_SEQ = 1
     
     
-
-        
-
 class Client():
     def __init__(self):
         # Communication
@@ -184,21 +181,25 @@ class Client():
                 
     
     def Get(self, path):
+        self.timer.startTimer()
         conn = httplib.HTTPConnection(self.BASE_URL, self.PORT)        
         
-        try:
-            conn.putheader('x-file', str(self.MY_NAME))
-        except Exception as e:
-            print "FUCK", e
+        #try:
+        #    conn.putheader("xfile", "mordi")
+        #except Exception as e:
+        #    print "FUCK", e
         #conn.p
         
-        self.timer.startTimer()
-        conn.request("GET", path)
+        
+        conn.request("GET", path, None, {"x-tile":self.MY_NAME})
         
         
         response = conn.getresponse()
         status = response.status
+        headerDict = self._headerToDict(response.getheaders())
+        data = (status, response.read(), headerDict)
         
+        conn.close()
         if status == httplib.OK:
             self.timer.stopTimer()
             self.resTime, self.maxTime, self.avgTime = self.timer.getValues()
@@ -207,10 +208,8 @@ class Client():
             self.timer.stopTimer(False)
             self.resTime = 0
         
-        headerDict = self._headerToDict(response.getheaders())
-        data = (status, response.read(), headerDict)
         
-        conn.close()
+        
         return data
     
     def _headerToDict(self, headers):
@@ -270,14 +269,25 @@ class Client():
                 self.image = pygame.image.load(buff)
                 self.font = time
                 self.cloude = float(headers['x-cc'])
+                
+                self.redirects = 0
             
             elif status == httplib.SEE_OTHER:
                 self.font = "GOT REDIRECT"
-                print "REDIRECT TO: ", headers["location"]
+                
                 self.redirects += 1
                 if self.redirects >= self.maxRedirs:
+                    self.font = "TO MANY REDIRECTS!"
                     print "Can't connect to server"
-            
+                
+                redirAddr = headers["location"]
+                print "REDIRECT TO: ", redirAddr
+                redirAddr = redirAddr.split(':')
+                self.BASE_URL = redirAddr[0]
+                self.PORT = redirAddr[1]
+                
+                self.getCloudValue(time)
+                
             elif status == httplib.BAD_REQUEST:
                 self.font = "SERVER ERROR BAD REQUEST"
                 
