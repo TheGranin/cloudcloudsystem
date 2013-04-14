@@ -6,7 +6,6 @@ import SocketServer
 from threadSafeTimer import ThreadSafeTimer
 import time
 
-
 global cache
 cache = Cache(imageCacheSize, ccCacheSize)
 display = Display()
@@ -60,7 +59,8 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		else:
 			#Redirect the client
 			self.send_response(303)
-			self.send_header('Location',Servers[random.randint(0,2)])
+			server = getRandomServer()
+			self.send_header('Location', server[0] + ":" +str(server[1]))
 			self.end_headers()
 			#TODO UPDATE IN FUTURE
 			#self.send_header('Location','http://0.0.0.0:'+ ServersPorts[random.randint(0,2)])
@@ -71,7 +71,7 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		 MUST HAVE  at the end servernumber=3&client=tile-1-2
 		"""
 		print C3Server +"servernumber=" + str(serverNumber) +"&client="+ tile 
-		response = urllib2.urlopen(C3Server +"servernumber=" + str(s) +"&client="+ tile )
+		response = urllib2.urlopen(C3Server +"servernumber=" + str(serverNumber) +"&client="+ tile )
 		return response.read()
 
 
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 		parser.add_argument("-p", "--port", type = int ,help = "which port should the server run on", default = "8080")
 		parser.add_argument("-s", "--serverNumber" ,type = int ,help = "Which server number are you", default = "1")
 		args = parser.parse_args()
-		serverNumber = arg.serverNumber
+		serverNumber = args.serverNumber
 		server = ThreadedHTTPServer(('', args.port), myHandler)
 		print 'Started httpserver on port' , args.port
     

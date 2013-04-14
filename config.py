@@ -1,13 +1,17 @@
 import datetime
+import random
 
-Servers = ['tile-5-1','tile-4-1','tile-3-1']
-#C2Server = "http://0.0.0.0:1234/"
-#C3Server = "http://0.0.0.0:4321/"
-C2Server = "http://vvnas00:9909/"
-C3Server = "http://rocksvv.cs.uit.no:9909/?"
+Servers = [('tile-5-1',8080),('tile-4-1',8080),('tile-3-1',8080)]
+C2Server = "http://0.0.0.0:1234/"
+C3Server = "http://0.0.0.0:4321/"
+#C2Server = "http://vvnas00:9909/"
+#C3Server = "http://rocksvv.cs.uit.no:9909/?"
 
 imageCacheSize = 50
 ccCacheSize = 50000
+
+def getRandomServer()
+	return Servers[random.randint(0,len(Servers))]
 
 def roundTime(dt=None, roundTo=60):
    """Round a datetime object to any time laps in seconds
