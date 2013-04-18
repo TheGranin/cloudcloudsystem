@@ -65,7 +65,8 @@ class Client():
         if auto:
             if modeType == "sa":
                 self.mode = "SCROLL ENTIRE SET"
-                self.smoothScrool("2003/01/01/0000", "2013/01/01/0000", 1)
+                self.smoothScrool("2005/01/01/0000", "2013/01/01/0000", 
+1)
             elif modeType == "rp":
                 print "MODE RANDOM PICKS"
                 self.prosentsOfReqSequense = 0
@@ -92,7 +93,7 @@ class Client():
                 time.sleep(1)
             
             #requestType = self._getRandReqType()
-	    requestType = TYPES.REQ_TYPE_SEQ
+	    requestType = TYPES.REQ_TYPE_DATE
             if requestType == TYPES.REQ_TYPE_DATE:
                 self.autoGet()
             elif requestType == TYPES.REQ_TYPE_SEQ:
