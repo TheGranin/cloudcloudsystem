@@ -121,7 +121,7 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		return (bestImage, median)
 		
 	#The request handler issues a inverse name lookup in order to display 
-	#the client name in the log, this always fails and has a huge delay overrides it
+	#the client name in the log, this always fails and has a huge delay, overrides it
 	def address_string(self):
 		host, port = self.client_address[:2]
 		#return socket.getfqdn(host)
