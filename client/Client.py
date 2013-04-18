@@ -3,7 +3,7 @@ Created on Apr 8, 2013
 
 @author: Simon
 '''
-import httplib, pygame, cStringIO, thread, argparse, time, random, datetime, Timer, config
+import httplib, pygame, cStringIO, thread, argparse, time, random, datetime, Timer, config, os
 from pygame.locals import *
 from miniboids import *
 from socket import gethostname
@@ -139,6 +139,7 @@ class Client():
     def display(self):
         pygame.display.init()
         pygame.font.init()
+        os.environ['SDL_VIDEO_WINDOW_POS'] = str(310) + ',' + str(0)
         clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((704, 576))
         self.fontType = pygame.font.SysFont("None", 40)
@@ -171,7 +172,7 @@ class Client():
                     
                 boid.draw(self.screen)
             
-            self.screen.blit(self.fontType.render(str("Server@: %s, PORT: %d" % (self.BASE_URL, self.PORT)), 0, (255,0,0)), (40,10))
+            self.screen.blit(self.fontType.render(str("Server@: %s, PORT: %s" % (self.BASE_URL, str(self.PORT))), 0, (255,0,0)), (40,10))
             self.screen.blit(self.fontType.render(str(self.mode), 0, (255,0,0)), (40,50))
             
                 

@@ -4,6 +4,11 @@ import cStringIO
 import collections
 from config import *
 from limitedSizeDict import LimitedSizeDict
+from threadSafeTimer import ThreadSafeTimer
+import time
+
+
+timer3 = ThreadSafeTimer(99)
 
 
 class Cache():
@@ -21,7 +26,7 @@ class Cache():
 		Calculates the cloudiness in a image in %, if something went wrong -1 is instead returned
 		Formula given by the assignment text
 		"""
-		
+		startTime = time.time() * 1000
 		try:
 			
 			buff = cStringIO.StringIO()
@@ -49,9 +54,10 @@ class Cache():
 				CC = 100.0 - Nbw*100.0/(626*266)
 			else:
 				CC = 0.0 
-				
-			
+
 			return CC 
+			
+			
 		except IOError:
 			print "cannot convert", infile
 			return -1
@@ -82,10 +88,12 @@ class Cache():
 			self.ilDictHitMiss.append(1)
 			return self.ildict[date]
 		try:
+			startTime = time.time() * 1000
 			response = urllib2.urlopen(C2Server+ date.strftime("%Y/%m/%d/wcam0_%Y%m%d_%H%M.jpg") )
 			image = response.read()
 			self.ildict[date] = image
 			self.ilDictHitMiss.append(0)
+			timer3.time(startTime, time.time()*1000)
 			return image
 		except Exception as e:
 			print e

@@ -3,15 +3,14 @@ from cache import *
 from display import *
 import BaseHTTPServer
 import SocketServer
-from threadSafeTimer import ThreadSafeTimer
-import time
+
+
 
 global cache
 cache = Cache(imageCacheSize, ccCacheSize)
 display = Display()
 timer = ThreadSafeTimer(99)
 timer2 = ThreadSafeTimer(99)
-timer3 = ThreadSafeTimer(99)
 
 
 thread.start_new_thread(display.run, (cache,timer, timer2, timer3))
@@ -30,7 +29,8 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		startTime = time.time() * 1000
 		
 		tile = self.headers.get('x-tile')
-		work = self.reqWorkResp(tile)
+		work = self.reqWorkResp(serverNumber , tile)
+
 		if "YES" in work:
 			try:
 				date = datetime.datetime.strptime(self.path, "/%Y/%m/%d/%H%M")
@@ -69,14 +69,13 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			#TODO UPDATE IN FUTURE
 			#self.send_header('Location','http://0.0.0.0:'+ ServersPorts[random.randint(0,2)])
 		
-	def reqWorkResp(self, tile):
+	def reqWorkResp(self,servernumber = 1 ,tile = "tile-2-2"):
 		"""
 		Request an answer from the C3 server
 		 MUST HAVE  at the end servernumber=3&client=tile-1-2
 		"""
 		try:
-			print C3Server +"servernumber=" + str(serverNumber) +"&client="+ tile 
-			response = urllib2.urlopen(C3Server +"servernumber=" + str(serverNumber) +"&client="+ tile )
+			response = urllib2.urlopen(C3Server +"servernumber=" + str(serverNumber) +"&client="+ str(tile) )
 			return response.read()
 		except Exception as e:
 			print "C3 Server error"
@@ -87,6 +86,7 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		"""
 		Finds the image that best represent the cloudiness over a hour and the meidan over that cloudiness 
 		"""
+		startTime = time.time() * 1000
 		pictures = []
 		fifteenMinutes = datetime.timedelta(minutes=15)
 		median = 0.0
@@ -116,6 +116,8 @@ class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		bestImage = tupleData[0]
 		if bestImage == None:
 			bestImage = cache.getImage(tupleData[2])
+		
+		timer2.time(startTime, time.time()*1000)
 		return (bestImage, median)
 		
 	#The request handler issues a inverse name lookup in order to display 

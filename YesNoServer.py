@@ -13,7 +13,7 @@ urls = (
 )
 
 class index():
-    def GET(self, path):
+    def GET(self, path = ""):
         randNum = random.randrange(0, 100);
         if (randNum < 100):
             return "YES"
