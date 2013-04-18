@@ -6,7 +6,7 @@ assignment 2 inf-3203
 
 Server Frontend:
 /server contains the code for the server frontend
-run python Serverfrontend.py to run the code
+run python Serverfrontend.py to run the code, -h to see what options you have
 
 cache.py: Contains wrapper code for functions where in memory caching is used
 dispaly.py: Code to be runned in threads to dispaly server information
@@ -18,7 +18,7 @@ threadSafeTimer.py: A helper class to measure time, in a thread envoirement
 
 Clients:
 /client contains the code for the client to run
-run python Client.py to run the code
+run python Client.py to run the code, -h to see what options you have
 
 Client.py: 	Contains the code to run the client, as well as the pygame code used for displaying information
 			The display code runs in a seperate thead from the server request code
