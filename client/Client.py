@@ -92,16 +92,17 @@ class Client():
                 self.mode = "AUTO TEST: Sleep: "+ str(sleep-x)+" sec"
                 time.sleep(1)
             
-            #requestType = self._getRandReqType()
-	    requestType = TYPES.REQ_TYPE_DATE
+            requestType = self._getRandReqType()
+           #requestType = TYPES.REQ_TYPE_DATE
             if requestType == TYPES.REQ_TYPE_DATE:
                 self.autoGet()
             elif requestType == TYPES.REQ_TYPE_SEQ:
                 self.autoScrool()
     
     def _getRandReqType(self):
-        range = random.randrange(0, 101)
-        if range > self.prosentsOfReqSequense:
+        value = random.randrange(0, 101)
+        print "EEEEEEEEE", value, self.prosentsOfReqSequense
+        if value < self.prosentsOfReqSequense:
             return TYPES.REQ_TYPE_SEQ
         else:
             return TYPES.REQ_TYPE_DATE
