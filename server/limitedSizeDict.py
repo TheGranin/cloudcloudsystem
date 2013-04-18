@@ -4,7 +4,7 @@ from collections import OrderedDict
 #http://stackoverflow.com/questions/2437617/limiting-the-size-of-a-python-dictionary
 class LimitedSizeDict():
 	"""
-	A last inn first out list, with limited size given in the contrsucter
+	A last inn first out list, with limited size given in the contstructer
 	"""
 	
 	def __init__(self, size_limit, *args):
