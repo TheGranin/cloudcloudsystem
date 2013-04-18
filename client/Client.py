@@ -59,17 +59,35 @@ class Client():
         self._setup_menu()
         
     
-    def start(self, auto = False):
+    def start(self, auto = False, modeType = ""):
+        print modeType
         thread.start_new_thread(self.display, ())
         if auto:
-            self.autoTest()
+            if modeType == "sa":
+                self.mode = "SCROLL ENTIRE SET"
+                self.smoothScrool("2003/01/01/0000", "2013/01/01/0000", 1)
+            elif modeType == "rp":
+                print "MODE RANDOM PICKS"
+                self.prosentsOfReqSequense = 0
+                self.autoTest()
+            elif modeType == "rs":
+                print "MODE RANDOM SCROLL"
+                self.prosentsOfReqSequense = 100
+                self.autoTest()
+            else:
+                print "MODE RANDOM"
+                self.prosentsOfReqSequense = 50
+                self.autoTest()
+            
+            
+            
         else:
             self.run()
             
     def autoTest(self):        
         while(self.running):
             sleep = random.randrange(0, 5)
-            for x in range(0, sleep+1):
+            for x in range(0, sleep + 1):
                 self.mode = "AUTO TEST: Sleep: "+ str(sleep-x)+" sec"
                 time.sleep(1)
             
@@ -82,7 +100,7 @@ class Client():
     
     def _getRandReqType(self):
         range = random.randrange(0, 101)
-        if range > 30:
+        if range > self.prosentsOfReqSequense:
             return TYPES.REQ_TYPE_SEQ
         else:
             return TYPES.REQ_TYPE_DATE
@@ -139,7 +157,7 @@ class Client():
     def display(self):
         pygame.display.init()
         pygame.font.init()
-        os.environ['SDL_VIDEO_WINDOW_POS'] = str(310) + ',' + str(0)
+        os.environ['SDL_VIDEO_WINDOW_POS'] = str(310) + ',' + str(30)
         clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((704, 576))
         self.fontType = pygame.font.SysFont("None", 40)
@@ -226,21 +244,29 @@ class Client():
     def command(self, cmd):
         method = cmd[0]
         if method in ["cloud", "c", "-c"]:
-            print "Getting cloud value"
             # TODO get cloud
-            self.getCloudValue(cmd[1])
-            
+            try:
+                self.getCloudValue(cmd[1])
+            except IndexError:
+                print "Need date to handle command"
+            print "Getting cloud value"
         
         elif method in ["help", "h", "-h"]:
             print self.help
+            
+        elif method in ["random", "r"]:
+            print "Gets random images"
+            self.autoGet()
+            
     
     def smoothScrool(self, timeStart, timeEnd, interval = 1):
         startDate = datetime.datetime.strptime(timeStart, "%Y/%m/%d/%H%M")
         endDate = datetime.datetime.strptime(timeEnd, "%Y/%m/%d/%H%M")
         
         while (startDate < endDate):
-            self.mode = "SMOOTH SCROLL INT: " + str(interval * 15)+"min"
+            
             startDate = startDate + (interval*self.fifteenMinutes)
+            self.mode = "SCROLL INT: " + str(interval * 15)+"min, current: " +startDate.strftime("%Y/%m/%d/%H%M") 
             print startDate
             self.getCloudValue(startDate.strftime("%Y/%m/%d/%H%M"))
                                      
@@ -319,7 +345,7 @@ class Client():
         Help: help, h, -h
         Exit: exit, e, -e
         Get cloud value:
-            Random: c
+            Random: r
             Single: c yyyy/mm/dd/hhmm
             """
         
@@ -327,11 +353,15 @@ class Client():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-a", "--auto", help = "run client in Auto mode", action = 'store_true')
+    
+    parser.add_argument("-m", "--mode", type = str , default = "")
 
     args = parser.parse_args()
     
+    
+    
     client = Client()
-    client.start(args.auto)
+    client.start(args.auto, args.mode)
     print "Exit program"
     
     
