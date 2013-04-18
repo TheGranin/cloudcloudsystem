@@ -10,7 +10,11 @@ global cache
 cache = Cache(imageCacheSize, ccCacheSize)
 display = Display()
 timer = ThreadSafeTimer(99)
-thread.start_new_thread(display.run, (cache,timer))
+timer2 = ThreadSafeTimer(99)
+timer3 = ThreadSafeTimer(99)
+
+
+thread.start_new_thread(display.run, (cache,timer, timer2, timer3))
 serverNumber = 0
 
 class myHandler(BaseHTTPServer.BaseHTTPRequestHandler):
