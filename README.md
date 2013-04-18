@@ -23,3 +23,8 @@ run python Client.py to run the code
 Client.py: 	Contains the code to run the client, as well as the pygame code used for displaying information
 			The display code runs in a seperate thead from the server request code
 Timer.py	A helper class to measure time
+
+
+Setup:
+config.py: 	A file with some web addresses to backends servers and some helper functions
+			Must be placed here as both the client and server is dependent on the file
